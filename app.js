@@ -8,8 +8,11 @@ var exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/rotten-potatoes', { useMongoClient: true });
 
+
 const Review = mongoose.model('Review', {
-  title: String
+  title: String,
+  description: String,
+  movieTitle: String
 });
 
 
@@ -23,21 +26,39 @@ const Review = mongoose.model('Review', {
 
 
 
-app.get('/reviews', (req, res) => {
-    Review.find().then(reviews => {
-res.render('reviews-index', { reviews: reviews });
+//app.get('/reviews', (req, res) => {
+//    Review.find().then(reviews => {
+//res.render('reviews-index', { reviews: reviews });
+//})
+//.catch(err => {
+//      console.log(err);
+//    })
+//})
+app.post('/reviews', (req, res) => {
+  Review.create(req.body).then((review) => {
+    console.log(review);
+    res.redirect('/');
+  }).catch((err) => {
+    console.log(err.message);
+  })
 })
-.catch(err => {
-      console.log(err);
-    })
-})
-
-
-
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
+// INITIALIZE BODY-PARSER AND ADD IT TO APP
+const bodyParser = require('body-parser');
+
+...
+// The following line must appear AFTER const app = express() and before your routes!
+app.use(bodyParser.urlencoded({ extended: true }));
+
+...
+// CREATE
+app.post('/reviews', (req, res) => {
+  console.log(req.body);
+  // res.render('reviews-new', {});
+})
 
 
 
