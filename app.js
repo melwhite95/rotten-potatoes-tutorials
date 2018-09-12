@@ -34,14 +34,30 @@ const Review = mongoose.model('Review', {
 //      console.log(err);
 //    })
 //})
-app.post('/reviews', (req, res) => {
-  Review.create(req.body).then((review) => {
-    console.log(review);
-    res.redirect('/');
+app.get('/reviews/:id', (req, res) => {
+  Review.findById(req.params.id).then((review) => {
+    res.render('reviews-show', { review: review })
   }).catch((err) => {
     console.log(err.message);
   })
 })
+
+//CREATE
+app.post('/reviews', (req, res) => {
+  Review.create(req.body).then((review) => {
+    console.log(review)
+    res.redirect(`/reviews/${review._id}`) // Redirect to reviews/:id
+  }).catch((err) => {
+    console.log(err.message)
+  })
+})
+
+app.get('/reviews/:id/edit', function (req, res) {
+  Review.findById(req.params.id, function(err, review) {
+    res.render('reviews-edit', {review: review});
+  })
+})
+
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
@@ -55,17 +71,35 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 ...
 // CREATE
-app.post('/reviews', (req, res) => {
-  console.log(req.body);
+//app.post('/reviews', (req, res) => {
+  //console.log(req.body);
   // res.render('reviews-new', {});
+//})
+
+
+
+const express = require('express')
+const methodOverride = require('method-override')
+
+...
+
+const app = express()
+
+...
+
+// override with POST having ?_method=DELETE or ?_method=PUT
+app.use(methodOverride('_method'))
+
+
+app.put('/reviews/:id', (req, res) => {
+  Review.findByIdAndUpdate(req.params.id, req.body)
+    .then(review => {
+      res.redirect(`/reviews/${review._id}`)
+    })
+    .catch(err => {
+      console.log(err.message)
+    })
 })
-
-
-
-
-
-
-
 
 
 
