@@ -4,12 +4,23 @@ const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override')
+//const Review = require('./models/review')
+
+const Review = mongoose.model('reviews', {
+  title: String,
+  description: String,
+  movieTitle: String
+});
+
+  //require('./controllers/reviews')(app);
 
 // BOOSTRAPPING THE APP
 const app = express()
 
+
+//require('./controllers/reviews')(app);
 // MIDDLEWARE
-mongoose.connect('mongodb://localhost/rotten-potatoes');
+mongoose.connect('mongodb://localhost/rotten-potatoes',{ useNewUrlParser: true });
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 app.use(methodOverride('_method'))
@@ -17,11 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 
 // MODELS
-const Review = mongoose.model('Review', {
-  title: String,
-  description: String,
-  movieTitle: String
-});
+
 
 
 // ROUTES
@@ -88,6 +95,8 @@ app.delete('/reviews/:id', function (req, res) {
     console.log(err.message);
   })
 })
+module.exports = function(app){}
+
 // SERVER
 app.listen(3000, () => {
   console.log('App listening on port 3000!')
