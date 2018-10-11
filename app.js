@@ -1,14 +1,22 @@
+// DECLARATIONS
 const express = require('express')
-
-const app = express()
-var exphbs = require('express-handlebars');
-
-
-
+const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/rotten-potatoes', { useMongoClient: true });
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override')
+
+// BOOSTRAPPING THE APP
+const app = express()
+
+// MIDDLEWARE
+mongoose.connect('mongodb://localhost/rotten-potatoes');
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+app.use(methodOverride('_method'))
+app.use(bodyParser.urlencoded({ extended: true }))
 
 
+// MODELS
 const Review = mongoose.model('Review', {
   title: String,
   description: String,
@@ -16,30 +24,22 @@ const Review = mongoose.model('Review', {
 });
 
 
+// ROUTES
 
-
-//let reviews = [
-  //{ title: "Great Review" },
- // { title: "Next Review" }
-//]
-
-
-
-
-//app.get('/reviews', (req, res) => {
-//    Review.find().then(reviews => {
-//res.render('reviews-index', { reviews: reviews });
-//})
-//.catch(err => {
-//      console.log(err);
-//    })
-//})
-app.get('/reviews/:id', (req, res) => {
-  Review.findById(req.params.id).then((review) => {
-    res.render('reviews-show', { review: review })
-  }).catch((err) => {
-    console.log(err.message);
+// INDEX
+app.get('/', (req, res) => {
+   Review.find().then(reviews => {
+    res.render('reviews-index', { reviews: reviews });
   })
+  .catch(err => {
+    console.log(err);
+  });
+});
+
+
+// NEW
+app.get('/reviews/new', (req, res) => {
+  res.render('reviews-new')
 })
 
 //CREATE
@@ -52,45 +52,23 @@ app.post('/reviews', (req, res) => {
   })
 })
 
+// SHOW
+app.get('/reviews/:id', (req, res) => {
+  Review.findById(req.params.id).then((review) => {
+    res.render('reviews-show', { review: review })
+  }).catch((err) => {
+    console.log(err.message);
+  })
+})
+
+// EDIT
 app.get('/reviews/:id/edit', function (req, res) {
   Review.findById(req.params.id, function(err, review) {
     res.render('reviews-edit', {review: review});
   })
 })
 
-
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
-app.set('view engine', 'handlebars');
-
-// INITIALIZE BODY-PARSER AND ADD IT TO APP
-const bodyParser = require('body-parser');
-
-...
-// The following line must appear AFTER const app = express() and before your routes!
-app.use(bodyParser.urlencoded({ extended: true }));
-
-...
-// CREATE
-//app.post('/reviews', (req, res) => {
-  //console.log(req.body);
-  // res.render('reviews-new', {});
-//})
-
-
-
-const express = require('express')
-const methodOverride = require('method-override')
-
-...
-
-const app = express()
-
-...
-
-// override with POST having ?_method=DELETE or ?_method=PUT
-app.use(methodOverride('_method'))
-
-
+// UPDATE
 app.put('/reviews/:id', (req, res) => {
   Review.findByIdAndUpdate(req.params.id, req.body)
     .then(review => {
@@ -101,14 +79,16 @@ app.put('/reviews/:id', (req, res) => {
     })
 })
 
-
-
-
-
-
-
-
-
+// DELETE
+app.delete('/reviews/:id', function (req, res) {
+  console.log("DELETE review")
+  Review.findByIdAndRemove(req.params.id).then((review) => {
+    res.redirect('/');
+  }).catch((err) => {
+    console.log(err.message);
+  })
+})
+// SERVER
 app.listen(3000, () => {
   console.log('App listening on port 3000!')
 })
