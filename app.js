@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override')
 //const Review = require('./models/review')
-
+const reviews = require('./controllers/reviews');
 const Review = mongoose.model('reviews', {
   title: String,
   description: String,
@@ -96,7 +96,7 @@ app.delete('/reviews/:id', function (req, res) {
   })
 })
 module.exports = function(app){}
-
+module.exports = app;
 // SERVER
 app.listen(3000, () => {
   console.log('App listening on port 3000!')
