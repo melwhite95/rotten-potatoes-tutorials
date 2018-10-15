@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override')
 //const Review = require('./models/review')
 const reviews = require('./controllers/reviews');
+
+
+
 const Review = mongoose.model('reviews', {
   title: String,
   description: String,
@@ -20,7 +23,7 @@ const app = express()
 
 //require('./controllers/reviews')(app);
 // MIDDLEWARE
-mongoose.connect('mongodb://localhost/rotten-potatoes',{ useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes');
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 app.use(methodOverride('_method'))
@@ -98,6 +101,6 @@ app.delete('/reviews/:id', function (req, res) {
 module.exports = function(app){}
 module.exports = app;
 // SERVER
-app.listen(3000, () => {
-  console.log('App listening on port 3000!')
+app.listen(2001, () => {
+  console.log('im here for you brother 2001!')
 })
