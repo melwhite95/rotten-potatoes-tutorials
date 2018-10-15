@@ -7,7 +7,8 @@ const methodOverride = require('method-override')
 //const Review = require('./models/review')
 const reviews = require('./controllers/reviews');
 
-
+const port = process.env.PORT || 2001;
+app.listen(port);
 
 const Review = mongoose.model('reviews', {
   title: String,
@@ -23,7 +24,7 @@ const app = express()
 
 //require('./controllers/reviews')(app);
 // MIDDLEWARE
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes-tutorials');
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 app.use(methodOverride('_method'))
